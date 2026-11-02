@@ -1,0 +1,11 @@
+name: Menin CI testim
+
+on: push
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Salam diy 
+        run: echo "Salam! ........."
