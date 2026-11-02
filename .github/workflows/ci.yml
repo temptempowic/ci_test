@@ -9,3 +9,6 @@ jobs:
     steps:
       - name: Salam diy 
         run: echo "Salam! ........."
+
+      - name: Ikinji test
+        run: echo "Bu Ikinji adim. ........"
