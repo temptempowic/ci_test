@@ -2,13 +2,28 @@ name: Menin CI testim
 
 on: push
 
+permissions:
+  contents: read
+
 jobs:
-  hello:
+  test-vps:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Salam diy 
-        run: echo "Salam! ........."
+      - name: VPS checker
+      uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || '22' }}
+          script: |
+            set -eu
+            echo "SSH connection successful"
+            echo "User: $(whoami)"
+            echo "Host: $(hostname)"
+            echo "Uptime:"
+            uptime
+            echo "Disk space:"
+            df -h /
 
-      - name: Ikinji test
-        run: echo "Bu Ikinji adim. ........"
+    
