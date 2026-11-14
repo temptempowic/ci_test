@@ -2,14 +2,14 @@ name: Menin CI testim
 
 on: push
 
-permissions:
-  contents: read
-
 jobs:
   test-vps:
     runs-on: ubuntu-latest
     steps:
-      - name: VPS checker
+      - name: Check out project
+        uses: actions/checkout@v4
+
+      - name: Check VPS connection and prepare folder
         uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -19,11 +19,16 @@ jobs:
           script: |
             set -eu
             echo "SSH connection successful"
-            echo "User: $(whoami)"
-            echo "Host: $(hostname)"
-            echo "Uptime:"
-            uptime
-            echo "Disk space:"
-            df -h /
+            mkdir -p /tmp/ci-testim-09
+            echo "Folder created successfully"
+            
 
-    
+      - name: Copy project to VPS
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT || '22' }}
+          source: "."
+          target: "/tmp/ci-testim-09"
