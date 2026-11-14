@@ -1,0 +1,85 @@
+{% extends 'news/base.html' %}
+
+{% block title %}Home - AllNews{% endblock %}
+
+{% block content %}
+<div class="hero-section text-center">
+    <h1 class="display-4 mb-3">Welcome to AllNews</h1>
+    <p class="lead">Your source for the latest news and breaking stories from around the world</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <h2 class="mb-4">Featured Articles</h2>
+        {% if featured_articles %}
+            {% for article in featured_articles %}
+            <div class="news-card card">
+                {% if article.image %}
+                <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}">
+                {% endif %}
+                <div class="card-body">
+                    <h3 class="card-title h5">{{ article.title }}</h3>
+                    <p class="card-text">{{ article.excerpt|truncatechars:150 }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="bi bi-calendar me-1"></i> {{ article.published_date|date:"M d, Y" }}
+                            {% if article.category %} 
+                            <i class="bi bi-tag me-1 ms-2"></i> {{ article.category.name }}
+                            {% endif %}
+                        </small>
+                        <a href="{{ article.get_absolute_url }}" class="read-more">Read More <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-center py-4">No featured articles available.</p>
+        {% endif %}
+
+        <h2 class="my-5">Latest News</h2>
+        <div class="row">
+            {% for article in latest_articles %}
+            <div class="col-md-6">
+                <div class="news-card card h-100">
+                    {% if article.image %}
+                    <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}">
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <h3 class="card-title h6">{{ article.title }}</h3>
+                        <p class="card-text flex-grow-1">{{ article.excerpt|truncatechars:100 }}</p>
+                        <div class="mt-auto">
+                            <small class="text-muted">
+                                <i class="bi bi-calendar me-1"></i> {{ article.published_date|date:"M d, Y" }}
+                                {% if article.category %}
+                                <i class="bi bi-tag me-1 ms-2"></i> {{ article.category.name }}
+                                {% endif %}
+                            </small>
+                            <div class="mt-2">
+                                <a href="{{ article.get_absolute_url }}" class="read-more small">Read More <i class="bi bi-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-lg-4 sidebar">
+        <div class="card p-4 mb-4">
+            <h3 class="h5 mb-3">Categories</h3>
+            <div class="d-flex flex-wrap">
+                {% for category in categories %}
+                <a href="{% url 'news:category' category.slug %}" class="badge badge-category text-decoration-none mb-2 me-2">{{ category.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card p-4">
+            <h3 class="h5 mb-3">About AllNews</h3>
+            <p class="small">AllNews is your trusted source for breaking news, in-depth analysis, and compelling stories from around the world. We deliver news that matters, when it matters.</p>
+            <a href="/admin/" class="btn btn-primary btn-sm">Visit Admin Panel</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

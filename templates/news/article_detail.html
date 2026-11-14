@@ -1,0 +1,158 @@
+{% extends 'news/base.html' %}
+
+{% block title %}{{ article.title }} - AllNews{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/news/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/news/articles/">Articles</a></li>
+                <li class="breadcrumb-item active">{{ article.title }}</li>
+            </ol>
+        </nav>
+
+        <article>
+            <header class="mb-4">
+                <h1 class="display-5">{{ article.title }}</h1>
+                <div class="meta">
+                    <span class="me-3">
+                        <i class="bi bi-calendar me-1"></i> {{ article.published_date|date:"F d, Y" }}
+                    </span>
+                    <span class="me-3">
+                        <i class="bi bi-clock me-1"></i> {% widthratio article.content|wordcount 200 1 %} min read
+                    </span>
+                    <span class="me-3">
+                        <i class="bi bi-eye me-1"></i> {{ article.views_count }} views
+                    </span>
+                    {% if article.category %}
+                    <span>
+                        <i class="bi bi-tag me-1"></i> 
+                        <a href="{% url 'news:category' article.category.slug %}" class="text-decoration-none">{{ article.category.name }}</a>
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="author-info mt-3 p-3 bg-light rounded">
+                    <div class="author-avatar">
+                        {% if article.author %}
+                        {{ article.author.first_name|default:article.author.username|slice:':1' }}
+                        {% else %}
+                        A
+                        {% endif %}
+                    </div>
+                    <div>
+                        <strong>Written by {{ article.author|default:"Anonymous" }}</strong><br>
+                        <small class="text-muted">Staff Writer</small>
+                    </div>
+                </div>
+            </header>
+
+            {% if article.image %}
+            <figure class="mb-4">
+                <img src="{{ article.image.url }}" class="img-fluid rounded" alt="{{ article.title }}">
+                <figcaption class="text-center text-muted mt-2">{{ article.title }}</figcaption>
+            </figure>
+            {% endif %}
+
+            <div class="article-content">
+                {% if article.excerpt %}
+                <div class="alert alert-info mb-4">
+                    <strong>Excerpt:</strong> {{ article.excerpt }}
+                </div>
+                {% endif %}
+
+                <div class="content-wrapper">
+                    {{ article.content|linebreaks }}
+                </div>
+            </div>
+
+            {% if article.category and related_articles %}
+            <div class="related-articles mt-5">
+                <h3 class="mb-4">Related Articles</h3>
+                <div class="row">
+                    {% for related in related_articles %}
+                    <div class="col-md-4 mb-3">
+                        <div class="news-card card h-100">
+                            {% if related.image %}
+                            <img src="{{ related.image.url }}" class="card-img-top" alt="{{ related.title }}">
+                            {% endif %}
+                            <div class="card-body">
+                                <h4 class="card-title h6">{{ related.title }}</h4>
+                                <p class="card-text small">{{ related.excerpt|truncatechars:80 }}</p>
+                                <a href="{{ related.get_absolute_url }}" class="read-more small">Read More <i class="bi bi-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </article>
+
+        <div class="mt-5 pt-4 border-top">
+            <h4>Share This Article</h4>
+            <div class="d-flex gap-2">
+                <a href="#" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-facebook"></i> Facebook
+                </a>
+                <a href="#" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-twitter-x"></i> Twitter
+                </a>
+                <a href="#" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-linkedin"></i> LinkedIn
+                </a>
+                <a href="#" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-envelope"></i> Email
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 sidebar">
+        <div class="card p-4 mb-4">
+            <h3 class="h5 mb-3">Quick Stats</h3>
+            <ul class="list-unstyled">
+                <li class="mb-2">
+                    <i class="bi bi-eye me-2"></i>
+                    <strong>{{ article.views_count }}</strong> views
+                </li>
+                <li class="mb-2">
+                    <i class="bi bi-calendar me-2"></i>
+                    <strong>{{ article.published_date|date:"M d, Y" }}</strong> published
+                </li>
+                <li class="mb-2">
+                    <i class="bi bi-pencil me-2"></i>
+                    <strong>{{ article.content|wordcount }}</strong> words
+                </li>
+                {% if article.author %}
+                <li class="mb-2">
+                    <i class="bi bi-person me-2"></i>
+                    <strong>{{ article.author.get_full_name|default:article.author.username }}</strong>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="card p-4 mb-4">
+            <h3 class="h5 mb-3">Categories</h3>
+            <div class="d-flex flex-wrap">
+                {% for category in categories %}
+                <a href="{% url 'news:category' category.slug %}" class="badge badge-category text-decoration-none mb-2 me-2">{{ category.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card p-4">
+            <h3 class="h5 mb-3">Newsletter Signup</h3>
+            <p class="small">Stay updated with our latest articles delivered to your inbox weekly.</p>
+            <form>
+                <div class="mb-2">
+                    <input type="email" class="form-control form-control-sm" placeholder="Enter your email">
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm w-100">Subscribe</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

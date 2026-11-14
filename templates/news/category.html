@@ -1,0 +1,93 @@
+{% extends 'news/base.html' %}
+
+{% block title %}{{ category.name }} - AllNews{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/news/">Home</a></li>
+        <li class="breadcrumb-item active">{{ category.name }}</li>
+    </ol>
+</nav>
+
+<div class="hero-section text-center">
+    <h1 class="display-4 mb-3">{{ category.name }}</h1>
+    {% if category.description %}
+    <p class="lead">{{ category.description }}</p>
+    {% else %}
+    <p class="lead">Latest news and articles in the {{ category.name }} category</p>
+    {% endif %}
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Articles in {{ category.name }}</h2>
+            <span class="badge bg-primary rounded-pill">
+                {{ articles.count }} article{{ articles.count|pluralize }}
+            </span>
+        </div>
+
+        {% if articles %}
+            {% for article in articles %}
+            <div class="news-card card">
+                {% if article.image %}
+                <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}">
+                {% endif %}
+                <div class="card-body">
+                    <h3 class="card-title h5">{{ article.title }}</h3>
+                    <p class="card-text">{{ article.excerpt|truncatechars:150 }}</p>
+                    <div class="meta mb-3">
+                        <small class="text-muted">
+                            <i class="bi bi-calendar me-1"></i> {{ article.published_date|date:"M d, Y" }}
+                            <i class="bi bi-clock me-1 ms-3"></i> {% widthratio article.content|wordcount 200 1 %} min read
+                        </small>
+                    </div>
+                    <a href="{{ article.get_absolute_url }}" class="read-more">Read More <i class="bi bi-arrow-right"></i></a>
+                </div>
+            </div>
+            {% endfor %}
+
+        {% else %}
+            <div class="card p-5 text-center">
+                <i class="bi bi-newspaper display-1 text-muted mb-3"></i>
+                <h3>No articles in this category yet</h3>
+                <p class="text-muted">Check back later for new articles in this category.</p>
+                <a href="/news/articles/" class="btn btn-primary">View All Articles</a>
+           Deals
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="col-lg-4 sidebar">
+        <div class="card p-4 mb-4">
+            <h3 class="h5 mb-3">Other Categories</h3>
+            <div class="d-flex flex-wrap">
+                {% for category in categories|slice:':5' %}
+                {% if category != category %}
+                <a href="{% url 'news:category' category.slug %}" class="badge badge-category text-decoration-none mb-2 me-2">{{ category.name }}</a>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card p-4 mb-4">
+            <h3 class="h5 mb-3">Popular Tags</h3>
+            <div class="d-flex flex-wrap">
+                {% for category in categories|slice:':6' %}
+                <a href="{% url 'news:category' category.slug %}" class="badge badge-category text-decoration-none mb-2 me-2">{{ category.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card p-4">
+            <h3 class="h5 mb-3">Stay Updated</h3>
+            <p class="small">Subscribe to our newsletter to receive updates when new articles are published.</p>
+            <div class="input-group">
+                <input type="email" class="form-control form-control-sm" placeholder="Your email">
+                <button class="btn btn-primary btn-sm" type="button">Subscribe</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
