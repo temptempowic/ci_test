@@ -21,14 +21,10 @@ jobs:
             echo "SSH connection successful"
             mkdir -p /tmp/ci-testim-09
             echo "Folder created successfully"
+            cd /tmp/ci-testim-09/ci_test
+            pwd
+            sudo apt update
+            sudo apt install python3 python3-pip python3-venv -y
+            pip3 install -r reqs.txt
+            python3 manage.py runserver
             
-
-      - name: Copy project to VPS
-        uses: appleboy/scp-action@v1
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          password: ${{ secrets.VPS_PASSWORD }}
-          port: ${{ secrets.VPS_PORT || '22' }}
-          source: "."
-          target: "/tmp/ci-testim-09"
